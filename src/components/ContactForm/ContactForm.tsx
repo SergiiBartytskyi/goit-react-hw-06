@@ -1,9 +1,10 @@
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useDispatch } from "react-redux";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import { addContact } from "../../redux/contactsSlice";
 import { useId } from "react";
 import * as Yup from "yup";
 import css from "./ContactForm.module.css";
+import { IContactFormValues } from "./ContactForm.types";
+import { useAppDispatch } from "../../redux/hooks";
 
 const FeedbackSchema = Yup.object().shape({
   name: Yup.string()
@@ -20,19 +21,24 @@ const FeedbackSchema = Yup.object().shape({
     .required("Required"),
 });
 
+const initialValues: IContactFormValues = { name: "", number: "" };
+
 export default function ContactForm() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const userNameId = useId();
   const userNumber = useId();
 
-  const handleSubmit = (values, actions) => {
+  const handleSubmit = (
+    values: IContactFormValues,
+    actions: FormikHelpers<IContactFormValues>
+  ) => {
     dispatch(addContact(values));
     actions.resetForm();
   };
 
   return (
     <Formik
-      initialValues={{ name: "", number: "" }}
+      initialValues={initialValues}
       onSubmit={handleSubmit}
       validationSchema={FeedbackSchema}
     >
